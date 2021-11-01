@@ -1,0 +1,15 @@
+.rightAlignControls {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-content: stretch;
+}
+.leftAlignControls {
+    display: flex;
+    justify-content: flex-start;
+}
+.rootContainer {
+    padding-left:5px;
+    padding-right:5px;
+    display:inline-block;
+}

@@ -2,8 +2,9 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
+import Logo from "../../img/logo.png";
+import './Navbar.css';
 
 const Navbar = props => {
 
@@ -19,10 +20,11 @@ const Navbar = props => {
                         sx={{ mr: 2 }}
                     >
                     </IconButton>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Recall Assistant
+                    <img className="logo" src={Logo}/>
+                    <Typography ml={1} variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        RecallAssistant
                     </Typography>
-                    <Button color="inherit">Login</Button>
+                    <Typography variant="subtitle1"><small>1 listopada,</small> 16:08</Typography>
                 </Toolbar>
             </AppBar>
         </Box>
