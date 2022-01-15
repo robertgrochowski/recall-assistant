@@ -8,15 +8,20 @@ import {GET_RANDOM_NOTION_URL} from "../../common/Constants";
 const Notion = props => {
     const [notion, setNotion] = useState(null);
 
-    useEffect(() => {
+    const updateNotion = () => {
         axios.get(GET_RANDOM_NOTION_URL)
             .then(response => {
                 setNotion(response.data)
-            })
+        })
+    }
+
+    useEffect(() => {
+        updateNotion();
+        setInterval(updateNotion, 10*60*1000);
     }, [])
 
     return (
-        <Card sx={{ minWidth: 275 }}>
+        <Card sx={{ width: "750px" }}>
             <CardContent>
                 {notion ? <NotionBody notion={notion}/> : <LinearProgress />}
             </CardContent>

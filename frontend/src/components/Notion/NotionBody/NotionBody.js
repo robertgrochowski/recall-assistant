@@ -1,18 +1,25 @@
-import {CardContent, Chip, Divider, Grid, Typography} from "@mui/material";
+import {Chip, Grid, Typography} from "@mui/material";
 import TodayIcon from "@mui/icons-material/Today";
+import TagIcon from '@mui/icons-material/Tag';
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import MenuBook from "@mui/icons-material/MenuBook";
 
 const NotionBody = ({notion}) => {
-    console.log(notion)
+    let date = notion.addedDate ? new Date(notion.addedDate) : "";
     return <>
         <Grid container direction="row" alignItems="center" spacing={1}>
-            <Grid item>
-                <Chip size="small" label="27 paź 2021" icon={<TodayIcon fontSize="small"/>} />
-            </Grid>
-            <Grid item>
-                <Chip size="small" label="2" icon={<RemoveRedEyeIcon fontSize="small"/>} />
-            </Grid>
+            {date && <Grid item>
+                <Chip size="small" label={`${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`} icon={<TodayIcon fontSize="small"/>} />
+            </Grid>}
+            {!isNaN(notion.views) && <Grid item>
+                <Chip size="small" label={notion.views} icon={<RemoveRedEyeIcon fontSize="small"/>} />
+            </Grid>}
+            {notion.tags && notion.tags.map((val, i) => (
+                <Grid item key={i}>
+                    {val && <Chip size="small" label={val} icon={<TagIcon fontSize="small"/>} />}
+                </Grid>
+                ))
+            }
         </Grid>
         <Typography variant="h4" component="div" mt={1}>
             {notion?.header}
@@ -22,11 +29,11 @@ const NotionBody = ({notion}) => {
                 <MenuBook fontSize="small"/>
             </Grid>
             <Grid item>
-                <Typography variant="overline">National Geographic: 1000 lat historii Ameryki</Typography>
+                <Typography variant="overline">{notion?.source}</Typography>
             </Grid>
         </Grid>
         <Typography variant="body1" align="justify" pt={1}>
-            {notion?.content}
+            <div dangerouslySetInnerHTML={{__html: notion?.content}}></div>
         </Typography>
     </>;
 }

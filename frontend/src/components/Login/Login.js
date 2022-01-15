@@ -7,11 +7,13 @@ import axios from "axios";
 import {POST_AUTH} from "../../common/Constants";
 import {useState} from "react";
 import {Alert, CircularProgress} from "@mui/material";
+import {useNavigate} from "react-router-dom";
 
 const Login = ({setAuthenticated}) => {
 
     const [loginInProgress, setLoginInProgress] = useState(false)
     const [apiError, setApiError] = useState("");
+    let navigate = useNavigate();
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -27,6 +29,7 @@ const Login = ({setAuthenticated}) => {
         }).then(() => {
             localStorage.setItem('token', Buffer.from(`${username}:${pass}`).toString('base64'));
             setAuthenticated(true);
+            navigate("/");
         }).catch(error => {
             if(error?.response?.status === 401) {
                 setApiError("Invalid credentials");
