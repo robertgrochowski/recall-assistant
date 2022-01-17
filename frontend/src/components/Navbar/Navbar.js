@@ -15,7 +15,9 @@ const Navbar = () => {
 
     const updateTime = () => {
         let today = new Date();
-        setTime(`${today.getHours()}:${today.getMinutes()}`);
+        let minutes = today.getMinutes() < 10 ? "0"+today.getMinutes() : today.getMinutes();
+        let hours = today.getHours() < 10 ? "0"+today.getHours() : today.getHours();
+        setTime(`${hours}:${minutes}`);
     }
 
     useEffect(()=> {

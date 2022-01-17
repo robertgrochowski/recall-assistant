@@ -11,8 +11,8 @@ const NotionBody = ({notion}) => {
             {date && <Grid item>
                 <Chip size="small" label={`${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`} icon={<TodayIcon fontSize="small"/>} />
             </Grid>}
-            {!isNaN(notion.views) && <Grid item>
-                <Chip size="small" label={notion.views} icon={<RemoveRedEyeIcon fontSize="small"/>} />
+            {!isNaN(notion.viewsAmount) && <Grid item>
+                <Chip size="small" label={notion.viewsAmount} icon={<RemoveRedEyeIcon fontSize="small"/>} />
             </Grid>}
             {notion.tags && notion.tags.map((val, i) => (
                 <Grid item key={i}>
