@@ -5,7 +5,6 @@ import {
     CircularProgress,
     Grid,
     InputAdornment,
-    LinearProgress,
     Typography
 } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -16,14 +15,13 @@ import '../../App.css';
 import TagIcon from '@mui/icons-material/Tag';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import PreviewIcon from '@mui/icons-material/Preview';
-import React, {useEffect, useRef, useState} from "react";
+import React, {useState} from "react";
 import axios from "axios";
 import {GET_RANDOM_NOTION_URL} from "../../common/Constants";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 import './AddNotion.css';
 import FormElement from "./FormElement";
-import Notion from "../Notion/Notion";
 import NotionBody from "../Notion/NotionBody/NotionBody";
 
 const AddNotion = () => {
@@ -40,7 +38,6 @@ const AddNotion = () => {
     const [tag2, setTag2] = useState("")
     const [tag3, setTag3] = useState("")
 
-    const formats = ["bold"]
 
     const handleAddNotion = () => {
         setUploading(true)
@@ -68,7 +65,6 @@ const AddNotion = () => {
         fixedFormat = fixedFormat.startsWith("</br>") ? fixedFormat.substring(5) : fixedFormat;
         //let fixedFormat = value;
         setContent(fixedFormat);
-        console.log(fixedFormat)
     }
 
     return (
@@ -137,7 +133,6 @@ const AddNotion = () => {
                 {message && <Alert severity={error ? "error" : "success"}>{message}</Alert>}
                 <Button
                     margin="dense"
-                    variant="contained"
                     variant="contained"
                     fullWidth
                     sx={{mt:1}}

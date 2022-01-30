@@ -1,4 +1,4 @@
-import {Box, CircularProgress} from "@mui/material";
+import {Box} from "@mui/material";
 import Button from "@mui/material/Button";
 import CheckIcon from "@mui/icons-material/Check";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";

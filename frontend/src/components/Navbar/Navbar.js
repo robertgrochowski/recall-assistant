@@ -6,7 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import Logo from "../../img/logo.png";
 import './Navbar.css';
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 
 const Navbar = () => {
@@ -26,15 +26,15 @@ const Navbar = () => {
     }, [])
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
-                <Toolbar>
-                    <img className="logo" src={Logo}/>
-                    <Typography onClick={()=>navigate("/")} ml={1} variant="h6" component="div" sx={{ flexGrow: 1, cursor:'pointer' }}>
-                        RecallAssistant
+            <AppBar position="static" sx={{maxHeight: '40px'}}>
+                <Toolbar sx={{minHeight: '40px !important'}}>
+                    <img alt="logo" className="logo" src={Logo}/>
+                    <Typography onClick={()=>navigate("/")} ml={1} component="div" sx={{ flexGrow: 1, cursor:'pointer' }}>
+                        <b>R</b>ecall<b>A</b>ssistant
                     </Typography>
-                    <Typography variant="subtitle1"><small></small>{time}</Typography>
+                    <Typography variant="subtitle1">{time}</Typography>
                     <IconButton aria-label="add" onClick={()=>navigate("/add")}>
-                        <AddBoxIcon sx={{ml: 1, fontSize:30, color:"#fff" }}/>
+                        <AddBoxIcon sx={{ml: 1, fontSize:20, color:"#fff" }}/>
                     </IconButton>
                 </Toolbar>
             </AppBar>

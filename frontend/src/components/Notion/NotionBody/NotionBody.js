@@ -7,7 +7,7 @@ import MenuBook from "@mui/icons-material/MenuBook";
 const NotionBody = ({notion}) => {
     let date = notion.addedDate ? new Date(notion.addedDate) : "";
     return <>
-        <Grid container direction="row" alignItems="center" spacing={1}>
+        <Grid container direction="row" alignItems="center" spacing={1} sx={{paddingTop:0}}>
             {date && <Grid item>
                 <Chip size="small" label={`${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`} icon={<TodayIcon fontSize="small"/>} />
             </Grid>}
@@ -21,10 +21,10 @@ const NotionBody = ({notion}) => {
                 ))
             }
         </Grid>
-        <Typography variant="h4" component="div" mt={1}>
+        <Typography variant="h4" component="div" mt={0.4}>
             {notion?.header}
         </Typography>
-        <Grid container direction="row" alignItems="center" spacing={1}>
+        <Grid container direction="row" alignItems="center" spacing={1} pt={0.5}>
             <Grid item>
                 <MenuBook fontSize="small"/>
             </Grid>
@@ -32,7 +32,7 @@ const NotionBody = ({notion}) => {
                 <Typography variant="overline">{notion?.source}</Typography>
             </Grid>
         </Grid>
-        <Typography variant="body1" align="justify" pt={1}>
+        <Typography variant="body1" align="justify" pt={0}>
             <div dangerouslySetInnerHTML={{__html: notion?.content}}></div>
         </Typography>
     </>;

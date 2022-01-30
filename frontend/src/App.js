@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import Navbar from "./components/Navbar/Navbar";
 import Notion from "./components/Notion/Notion";
 import {Container} from "@mui/material";
 import './App.css';
-import {BrowserRouter as Router, Navigate, Route, Routes, useNavigate} from 'react-router-dom';
+import {BrowserRouter as Router, Navigate, Route, Routes} from 'react-router-dom';
 
 import Login from "./components/Login/Login";
 import AddNotion from "./components/AddNotion/AddNotion";
@@ -15,7 +15,7 @@ const App = () => {
     return (
       <Router>
         <Navbar/>
-        <Container maxWidth="xl" sx={{paddingTop: 2}}>
+        <Container maxWidth="xl" sx={{paddingTop: 1}}>
             {!authenticated && <Navigate to={"/login"}/>}
             <Routes>
                 <Route path="/" element={<Notion/>}/>

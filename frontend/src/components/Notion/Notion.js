@@ -26,7 +26,7 @@ const Notion = props => {
         <Box display="flex"
              alignItems="center"
              justifyContent="center">
-            <Card sx={{ width: "750px" }}>
+            <Card sx={{ width: "770px" }}>
                 <CardContent>
                     {notion ? <NotionBody notion={notion}/> : <LinearProgress />}
                 </CardContent>
