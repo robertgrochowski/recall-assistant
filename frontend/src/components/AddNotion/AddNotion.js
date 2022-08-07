@@ -17,7 +17,7 @@ import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import PreviewIcon from '@mui/icons-material/Preview';
 import React, {useState} from "react";
 import axios from "axios";
-import {GET_RANDOM_NOTION_URL} from "../../common/Constants";
+import {NOTION_URL} from "../../common/Constants";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 import './AddNotion.css';
@@ -47,7 +47,7 @@ const AddNotion = () => {
             content,
             tags: [tag1, tag2, tag3]
         }
-        axios.post(GET_RANDOM_NOTION_URL, data)
+        axios.post(NOTION_URL, data)
         .then(response => {
             if(response.status === 200) {
                 setMessage("Notion has been added!");

@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import axios from "axios";
-import {POST_AUTH} from "../../common/Constants";
+import {NOTION_URL} from "../../common/Constants";
 import {useState} from "react";
 import {Alert, CircularProgress} from "@mui/material";
 import {useNavigate} from "react-router-dom";
@@ -23,10 +23,7 @@ const Login = ({setAuthenticated}) => {
         const username = data.get('username');
         const pass = data.get('password');
 
-        axios.post(POST_AUTH, {
-            username: username,
-            password: pass
-        }).then(() => {
+        axios.get(NOTION_URL).then(() => {
             localStorage.setItem('token', Buffer.from(`${username}:${pass}`).toString('base64'));
             setAuthenticated(true);
             navigate("/");

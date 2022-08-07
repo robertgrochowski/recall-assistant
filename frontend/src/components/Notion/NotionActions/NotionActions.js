@@ -5,7 +5,7 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import './NotionActions.css';
 import axios from "axios";
-import {UPDATE_NOTION_URL} from "../../../common/Constants";
+import {NOTION_URL} from "../../../common/Constants";
 import {useState} from "react";
 
 const NotionActions = ({disabled, views, uuid, updateNotion}) => {
@@ -18,7 +18,7 @@ const NotionActions = ({disabled, views, uuid, updateNotion}) => {
             views: views + 1,
             uuid
         }
-        axios.patch(UPDATE_NOTION_URL, data)
+        axios.patch(NOTION_URL, data)
             .then(() => {
                 updateNotion();
                 setUpdating(false);

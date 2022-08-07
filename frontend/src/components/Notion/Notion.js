@@ -3,14 +3,14 @@ import NotionBody from "./NotionBody/NotionBody";
 import NotionActions from "./NotionActions/NotionActions";
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {GET_RANDOM_NOTION_URL} from "../../common/Constants";
+import {NOTION_URL} from "../../common/Constants";
 
 const Notion = props => {
     const [notion, setNotion] = useState(null);
 
     const updateNotion = () => {
         setNotion(null);
-        axios.get(GET_RANDOM_NOTION_URL)
+        axios.get(NOTION_URL)
             .then(response => {
                 console.log(response.data)
                 setNotion(response.data)
