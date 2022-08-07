@@ -11,18 +11,32 @@ exports.lambdaHandler = function(event, context, callback) {
         Item: {
             uuid: uuid.v1(),
             header: event.header,
-            content: event.content
+            content: event.content,
+            tags: event.tags,
+            views: 0,
+            source: event.source,
+            addedDate: Date.now()
         }
+    };
+
+    let response = {
+        statusCode: 200,
+        body: "Ok"
     };
 
     dynamodb.put(params, function(err, data) {
         if (err) {
             console.log('Error putting item into dynamodb failed: '+err);
+
             callback(err, null);
         }
         else {
             console.log('great success: '+JSON.stringify(data, null, '  '));
-            callback(null, data);
+            callback(null, response);
         }
     });
+
+
+    console.log("response: " + JSON.stringify(response));
+    return response;
 };
