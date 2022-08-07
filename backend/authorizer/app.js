@@ -7,7 +7,8 @@ exports.lambdaHandler = function (event, context, callback) {
     if (!authorizationHeader)
         return callback('Unauthorized')
 
-    var plainCreds = Buffer.from(authorizationHeader, 'base64').toString().split(':')
+    var encodedCreds = authorizationHeader.split(' ')[1]
+    var plainCreds = Buffer.from(encodedCreds, 'base64').toString().split(':')
     var username = plainCreds[0]
     var password = plainCreds[1]
 

@@ -1,0 +1,8 @@
+{
+  "name": "cors",
+  "version": "1.0.0",
+  "description": "cors",
+  "main": "app.js",
+  "author": "Robert Grochowski",
+  "license": "MIT"
+}

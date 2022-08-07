@@ -3,10 +3,7 @@ const uuid = require('uuid');
 const dynamodb = new AWS.DynamoDB.DocumentClient({region: 'us-east-1'});
 
 exports.lambdaHandler = function(event, context, callback) {
-    console.log("function start");
-    console.log("event:" + JSON.stringify(event, null, '  '));
-
-    var params = {
+    const params = {
         TableName: 'NOTION',
         Item: {
             uuid: uuid.v1(),
@@ -19,24 +16,20 @@ exports.lambdaHandler = function(event, context, callback) {
         }
     };
 
-    let response = {
+    const response = {
         statusCode: 200,
-        body: "Ok"
+        body: "",
+        headers: {
+            "Access-Control-Allow-Origin": "*"
+        }
     };
 
-    dynamodb.put(params, function(err, data) {
+    dynamodb.put(params, function(err) {
         if (err) {
-            console.log('Error putting item into dynamodb failed: '+err);
+            response.statusCode = 500
+            response.body = 'DynamoDB put Error: ' + err;
+        }
 
-            callback(err, null);
-        }
-        else {
-            console.log('great success: '+JSON.stringify(data, null, '  '));
-            callback(null, response);
-        }
+        callback(null, response);
     });
-
-
-    console.log("response: " + JSON.stringify(response));
-    return response;
 };

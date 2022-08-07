@@ -13,7 +13,7 @@ Globals:
 
 Resources:
   # API Gateway
-  BasicAWSApiGateway:
+  APIGateway:
     Type: AWS::Serverless::Api
     Properties:
       Name: RecallAssistantAPI
@@ -28,6 +28,22 @@ Resources:
                 - Authorization
               ReauthorizeEvery: 3600
         DefaultAuthorizer: BasicAuthorizer
+
+  # CORS
+  CORSLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: cors/
+      Events:
+        CORSNotionApi:
+          Type: Api
+          Properties:
+            Auth:
+              Authorizer: NONE
+            RestApiId: !Ref APIGateway
+            Path: /notion
+            Method: options
+
 
   # Lambda API Role
   LambdaNotionApiRole:
@@ -85,7 +101,7 @@ Resources:
         AddNotionApi:
           Type: Api
           Properties:
-            RestApiId: !Ref BasicAWSApiGateway
+            RestApiId: !Ref APIGateway
             Path: /notion
             Method: patch
 
@@ -101,7 +117,7 @@ Resources:
         AddNotionApi:
           Type: Api
           Properties:
-            RestApiId: !Ref BasicAWSApiGateway
+            RestApiId: !Ref APIGateway
             Path: /notion
             Method: get
 
@@ -117,7 +133,7 @@ Resources:
         AddNotionApi:
           Type: Api
           Properties:
-            RestApiId: !Ref BasicAWSApiGateway
+            RestApiId: !Ref APIGateway
             Path: /notion
             Method: post
 
@@ -125,4 +141,4 @@ Outputs:
   AddNotionApi:
     Description: "API Gateway endpoint URL for dev stage for GET Notion function"
     Value:
-      Fn::Sub: https://${BasicAWSApiGateway}.execute-api.${AWS::Region}.amazonaws.com/dev/notion/
+      Fn::Sub: https://${APIGateway}.execute-api.${AWS::Region}.amazonaws.com/dev/notion/

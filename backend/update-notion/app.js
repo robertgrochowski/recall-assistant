@@ -1,8 +1,7 @@
 const AWS = require('aws-sdk');
 const dynamodb = new AWS.DynamoDB.DocumentClient({region: 'us-east-1'});
 
-exports.lambdaHandler = function(event) {
-
+exports.lambdaHandler = function(event, context, callback) {
     const params = {
         TableName: 'NOTION',
         Key:{
@@ -17,16 +16,17 @@ exports.lambdaHandler = function(event) {
 
     const response = {
         statusCode: 200,
-        body: "Ok"
+        body: "",
+        headers: {
+            "Access-Control-Allow-Origin": "*"
+        }
     };
 
-    console.log("Updating the item...");
-    dynamodb.update(params, function(err, data) {
+    dynamodb.update(params, function(err) {
         if (err) {
-            console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
-        } else {
-            console.log("UpdateItem succeeded:", JSON.stringify(data, null, 2));
-        }});
-
-    return response;
+            response.statusCode = 500
+            response.body = 'DynamoDB update Error: ' + err;
+        }
+        callback(null, response);
+    });
 };

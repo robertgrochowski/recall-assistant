@@ -15,7 +15,8 @@ exports.lambdaHandler = function(event, context, callback) {
         statusCode: 200,
         isBase64Encoded: false,
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*"
         },
         body: "",
     }
