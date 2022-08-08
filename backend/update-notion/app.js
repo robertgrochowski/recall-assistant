@@ -2,14 +2,16 @@ const AWS = require('aws-sdk');
 const dynamodb = new AWS.DynamoDB.DocumentClient({region: 'us-east-1'});
 
 exports.lambdaHandler = function(event, context, callback) {
+    console.log(event);
+    const body = JSON.parse(event.body);
     const params = {
         TableName: 'NOTION',
         Key:{
-            uuid: event.uuid
+            uuid: body.uuid
         },
         UpdateExpression: "set viewsAmount = :v",
         ExpressionAttributeValues:{
-            ":v": event.views
+            ":v": body.views
         },
         ReturnValues:"UPDATED_NEW"
     };
