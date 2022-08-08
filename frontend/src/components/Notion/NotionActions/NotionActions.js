@@ -15,7 +15,7 @@ const NotionActions = ({disabled, views, uuid, updateNotion}) => {
     const onNotionRead = () => {
         setUpdating(true);
         let data = {
-            views: views + 1,
+            views: (views ?? 0) + 1,
             uuid
         }
         axios.patch(NOTION_URL, data)
@@ -27,7 +27,7 @@ const NotionActions = ({disabled, views, uuid, updateNotion}) => {
 
     return <>
         <Box className="leftAlignControls">
-            <Button disabled={updating || disabled} size="large" variant="contained" startIcon={<CheckIcon />} onClick={onNotionRead}>
+            <Button className="buttonAdd" disabled={updating || disabled} size="large" variant="contained" startIcon={<CheckIcon />} onClick={onNotionRead}>
                 Read
             </Button>
             {/*<Button disabled={disabled} sx={{ml: 1}} variant="outlined" startIcon={<ReadMoreIcon />}>

@@ -41,7 +41,7 @@ const AddNotion = () => {
 
     const handleAddNotion = () => {
         setUploading(true)
-        let data = {
+        const data = {
             header: title,
             source,
             content,
@@ -51,12 +51,23 @@ const AddNotion = () => {
         .then(response => {
             if(response.status === 200) {
                 setMessage("Notion has been added!");
+                clearFields();
             } else {
                 setMessage("Error "+response.status);
                 setError(true);
             }
         })
         .finally(() => setUploading(false));
+    }
+
+    function clearFields() {
+        setQuillContent("");
+        setContent("");
+        setTag1("");
+        setTag2("");
+        setTag3("");
+        setTitle("");
+        setSource("");
     }
 
     const onTextareaChanged = (value) => {
@@ -84,27 +95,32 @@ const AddNotion = () => {
                                    required
                                    fullWidth
                                    autoFocus
+                                   value={title}
                         />
                     </FormElement>
                     <FormElement label="Source">
                         <TextField variant="standard" disabled={uploading}
                                    onChange={(e)=>setSource(e.target.value)}
                                    fullWidth
+                                   value={source}
                         />
                     </FormElement>
                     <FormElement label="Tags">
                         <Grid container spacing={1} sx={{mb:1}}>
                             <Grid item xs={4}>
                                 <TextField InputProps={{startAdornment: HashtagIcon()}} variant="standard"
-                                           disabled={uploading} onChange={(e)=>setTag1(e.target.value)}/>
+                                           disabled={uploading} onChange={(e)=>setTag1(e.target.value)}
+                                           value={tag1}/>
                             </Grid>
                             <Grid item xs={4}>
                                 <TextField InputProps={{startAdornment: HashtagIcon()}} variant="standard"
-                                           disabled={uploading} onChange={(e)=>setTag2(e.target.value)}/>
+                                           disabled={uploading} onChange={(e)=>setTag2(e.target.value)}
+                                           value={tag2}/>
                             </Grid>
                             <Grid item xs={4}>
                                 <TextField InputProps={{startAdornment: HashtagIcon()}} variant="standard"
-                                           disabled={uploading} onChange={(e)=>setTag3(e.target.value)}/>
+                                           disabled={uploading} onChange={(e)=>setTag3(e.target.value)}
+                                           value={tag3}/>
                             </Grid>
                         </Grid>
                     <ReactQuill theme="snow" value={quillContent} onChange={onTextareaChanged} readOnly={uploading}/>
