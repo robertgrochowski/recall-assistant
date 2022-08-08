@@ -3,15 +3,18 @@ const uuid = require('uuid');
 const dynamodb = new AWS.DynamoDB.DocumentClient({region: 'us-east-1'});
 
 exports.lambdaHandler = function(event, context, callback) {
+
+    console.log("Received Event: ", event);
+    const body = JSON.parse(event.body);
     const params = {
         TableName: 'NOTION',
         Item: {
             uuid: uuid.v1(),
-            header: event.header,
-            content: event.content,
-            tags: event.tags,
+            header: body.header,
+            content: body.content,
+            tags: body.tags,
             views: 0,
-            source: event.source,
+            source: body.source,
             addedDate: Date.now()
         }
     };
@@ -29,7 +32,7 @@ exports.lambdaHandler = function(event, context, callback) {
             response.statusCode = 500
             response.body = 'DynamoDB put Error: ' + err;
         }
-
+        console.log("Added Notion to dynamo!");
         callback(null, response);
     });
 };
