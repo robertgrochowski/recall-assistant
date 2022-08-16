@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import axios from "axios";
+import {BrowserRouter as Router} from 'react-router-dom'
 
-axios.interceptors.request.use(function (config) {
+    axios.interceptors.request.use(function (config) {
     const token = localStorage.getItem("token");
     if(token)
         config.headers.Authorization = "Basic "+ token;
@@ -17,7 +18,9 @@ axios.interceptors.request.use(function (config) {
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+      <Router>
+        <App />
+      </Router>
   </React.StrictMode>,
   document.getElementById('root')
 );

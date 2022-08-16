@@ -22,9 +22,9 @@ const Login = ({setAuthenticated}) => {
         setApiError("");
         const username = data.get('username');
         const pass = data.get('password');
+        localStorage.setItem('token', Buffer.from(`${username}:${pass}`).toString('base64'));
 
         axios.get(NOTION_URL).then(() => {
-            localStorage.setItem('token', Buffer.from(`${username}:${pass}`).toString('base64'));
             setAuthenticated(true);
             navigate("/");
         }).catch(error => {

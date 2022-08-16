@@ -5,7 +5,7 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import {NOTION_URL} from "../../common/Constants";
 
-const Notion = props => {
+const Notion = ({setAuthenticated}) => {
     const [notion, setNotion] = useState(null);
 
     const updateNotion = () => {
@@ -14,7 +14,12 @@ const Notion = props => {
             .then(response => {
                 console.log(response.data)
                 setNotion(response.data)
-        })
+            }).catch(error => {
+                if(error?.response?.status === 401) {
+                    console.log("get error, authenticated = false")
+                    setAuthenticated(false)
+                }
+            })
     }
 
     useEffect(() => {
