@@ -12,6 +12,16 @@ exports.lambdaHandler = function (event, context, callback) {
         }
     };
 
+    const response = {
+        statusCode: 200,
+        isBase64Encoded: false,
+        headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+        },
+        body: "",
+    }
+
     const executeQuery = (endDate) =>
         new Promise((resolve, reject) => {
             dynamodb.scan(getQueryParams(endDate),
@@ -22,16 +32,6 @@ exports.lambdaHandler = function (event, context, callback) {
         let date = new Date()
         date.setDate(date.getDate() - weeks * 7);
         return date;
-    }
-
-    const response = {
-        statusCode: 200,
-        isBase64Encoded: false,
-        headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*"
-        },
-        body: "",
     }
 
     const today = new Date();
@@ -55,9 +55,9 @@ exports.lambdaHandler = function (event, context, callback) {
         lastThreeWeeksItems = shuffle(lastThreeWeeksItems);
         lastThreeWeeksItems = lastThreeWeeksItems.slice(0, 30)
         for(let i = 0; i < 3; i++) {
-            result.push(lastWeekItems)
+            result.push(...lastWeekItems)
         }
-        result.push(lastThreeWeeksItems);
+        result.push(...lastThreeWeeksItems);
         result = shuffle(result)
 
         response.body = JSON.stringify(result);
@@ -67,7 +67,7 @@ exports.lambdaHandler = function (event, context, callback) {
     const onError = (error) => {
         console.error(error);
         response.statusCode = 500
-        response.body = 'DynamoDB Query Error: ' + err;
+        response.body = 'DynamoDB Query Error: ' + error;
         callback(null, response);
     }
 

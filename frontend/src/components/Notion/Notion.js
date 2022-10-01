@@ -1,26 +1,12 @@
 import {Card, CardActions, CardContent, LinearProgress, Divider, Box} from "@mui/material";
 import NotionBody from "./NotionBody/NotionBody";
 import NotionActions from "./NotionActions/NotionActions";
-import {useEffect, useState} from "react";
-import axios from "axios";
-import {NOTION_URL} from "../../common/Constants";
+import {useDispatch, useSelector} from "react-redux";
+import {selectNotion, nextNotion} from "../../store/notionSlices";
 
-const Notion = props => {
-    const [notion, setNotion] = useState(null);
-
-    const updateNotion = () => {
-        setNotion(null);
-        axios.get(NOTION_URL)
-            .then(response => {
-                console.log(response.data)
-                setNotion(response.data)
-        })
-    }
-
-    useEffect(() => {
-        updateNotion();
-        setInterval(updateNotion, 10*60*1000);
-    }, [])
+const Notion = () => {
+    const notion = useSelector(selectNotion);
+    const dispatch = useDispatch();
 
     return (
         <Box display="flex"
@@ -32,7 +18,7 @@ const Notion = props => {
                 </CardContent>
                 <Divider sx={{marginInline: 2}} light />
                 <CardActions>
-                    <NotionActions disabled={notion === null} uuid={notion?.uuid} views={notion?.viewsAmount} updateNotion={updateNotion}/>
+                    <NotionActions disabled={notion === null} uuid={notion?.uuid} views={notion?.viewsAmount} updateNotion={() => dispatch(nextNotion())}/>
                 </CardActions>
             </Card>
         </Box>
