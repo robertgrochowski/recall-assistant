@@ -42,7 +42,7 @@ const NotionBody = ({notion}) => {
             </Grid>
         </Grid>
 
-        <Typography variant="body1" align="justify" pt={0}>
+        <Typography component={'span'} variant="body1" align="justify" pt={0}>
             <div dangerouslySetInnerHTML={{__html: notion?.content}}></div>
         </Typography>
     </>;

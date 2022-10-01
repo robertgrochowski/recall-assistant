@@ -7,6 +7,7 @@ import { store } from './store/store';
 import {Provider} from "react-redux";
 import {NOTION_URL} from "./common/Constants";
 import {setNotions} from "./store/notionSlices";
+import {BrowserRouter as Router} from 'react-router-dom'
 
 axios.interceptors.request.use(function (config) {
     const token = localStorage.getItem("token");
@@ -28,7 +29,9 @@ axios.get(NOTION_URL).then(response => {
 ReactDOM.render(
     <React.StrictMode>
         <Provider store={store}>
-            <App/>
+            <Router>
+                <App />
+            </Router>
         </Provider>
     </React.StrictMode>,
 
