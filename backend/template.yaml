@@ -113,6 +113,7 @@ Resources:
        - LambdaNotionApiRole
        - Arn
       CodeUri: get-notion/
+      Timeout: 10
       Events:
         AddNotionApi:
           Type: Api
