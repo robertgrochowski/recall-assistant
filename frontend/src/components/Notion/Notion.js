@@ -10,8 +10,6 @@ const Notion = () => {
     const dispatch = useDispatch();
 
     const loadNextNotion = () => {
-        console.log(notions.currentItemIndex)
-        console.log(notions.notions.length)
         if(notions.currentItemIndex + 1 === notions.notions.length) {
             axios.get(NOTION_URL).then(response => {
                 dispatch(setNotions(response.data))
