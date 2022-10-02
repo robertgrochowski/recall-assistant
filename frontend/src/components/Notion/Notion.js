@@ -2,12 +2,27 @@ import {Card, CardActions, CardContent, LinearProgress, Divider, Box} from "@mui
 import NotionBody from "./NotionBody/NotionBody";
 import NotionActions from "./NotionActions/NotionActions";
 import {useDispatch, useSelector} from "react-redux";
-import {selectNotion, nextNotion} from "../../store/notionSlices";
-
+import {selectNotions, nextNotion, setNotions} from "../../store/notionSlices";
+import axios from "axios";
+import {NOTION_URL} from "../../common/Constants";
 const Notion = () => {
-    const notion = useSelector(selectNotion);
+    const notions = useSelector(selectNotions);
     const dispatch = useDispatch();
 
+    const loadNextNotion = () => {
+        console.log(notions.currentItemIndex)
+        console.log(notions.notions.length)
+        if(notions.currentItemIndex + 1 === notions.notions.length) {
+            axios.get(NOTION_URL).then(response => {
+                dispatch(setNotions(response.data))
+            });
+        }
+        else {
+            dispatch(nextNotion());
+        }
+    }
+
+    const notion = notions.currentItem;
     return (
         <Box display="flex"
              alignItems="center"
@@ -18,7 +33,7 @@ const Notion = () => {
                 </CardContent>
                 <Divider sx={{marginInline: 2}} light />
                 <CardActions>
-                    <NotionActions disabled={notion === null} uuid={notion?.uuid} views={notion?.viewsAmount} updateNotion={() => dispatch(nextNotion())}/>
+                    <NotionActions disabled={notion === null} uuid={notion?.uuid} views={notion?.viewsAmount} updateNotion={() => loadNextNotion()}/>
                 </CardActions>
             </Card>
         </Box>

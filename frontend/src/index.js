@@ -20,9 +20,7 @@ axios.interceptors.request.use(function (config) {
     }
 });
 
-
 axios.get(NOTION_URL).then(response => {
-    console.log(response.data)
     store.dispatch(setNotions(response.data))
 });
 

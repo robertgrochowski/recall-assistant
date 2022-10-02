@@ -3,7 +3,7 @@ import {createSlice} from "@reduxjs/toolkit";
 const initialState = {
     notions: [],
     currentItemIndex: 0,
-    currentItem: null,
+    currentItem: null
 };
 
 export const notionsSlice = createSlice({
@@ -16,18 +16,12 @@ export const notionsSlice = createSlice({
             state.currentItemIndex = 0
         },
         nextNotion: (state) => {
-            console.log("old state:"+state.currentItemIndex)
-            if(state.currentItemIndex + 1 === state.notions.length) {
-                state.currentItemIndex = 0;
-            }
-            else {
-                state.currentItemIndex += 1;
-            }
-            state.currentItem = state.notions[state.currentItemIndex]
+            state.currentItemIndex += 1;
+            state.currentItem = state.notions[state.currentItemIndex];
         }
     }
 });
 
 export const { setNotions, nextNotion } = notionsSlice.actions;
-export const selectNotion = (state) => state.notions.currentItem;
+export const selectNotions = (state) => state.notions;
 export default notionsSlice.reducer;
