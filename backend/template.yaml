@@ -7,17 +7,45 @@ Description: >
 
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 20
     Runtime: nodejs14.x
     Handler: app.lambdaHandler
 
 Resources:
+  # Add notion Queue
+  AddNotionQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      SqsManagedSseEnabled: False
+      ReceiveMessageWaitTimeSeconds: 20
+      QueueName: AddNotionQueue
+
+  # Add notion Queue
+  UpdateNotionQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      SqsManagedSseEnabled: False
+      ReceiveMessageWaitTimeSeconds: 20
+      QueueName: UpdateNotionQueue
+
+  # Add notion bucket
+  NotionsBucket:
+    Type: 'AWS::S3::Bucket'
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: recallassistant-notions
+
   # API Gateway
   APIGateway:
     Type: AWS::Serverless::Api
     Properties:
       Name: RecallAssistantAPI
-      StageName: dev
+      StageName: dev3
+      DefinitionBody:
+        'Fn::Transform':
+          Name: 'AWS::Include'
+          Parameters:
+            Location: 'api.json'
       Auth:
         Authorizers:
           BasicAuthorizer:
@@ -29,10 +57,11 @@ Resources:
               ReauthorizeEvery: 3600
         DefaultAuthorizer: BasicAuthorizer
 
-  # CORS
+  # CORS Lambda
   CORSLambda:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: NotionCORSFunction
       CodeUri: cors/
       Events:
         CORSNotionApi:
@@ -44,6 +73,30 @@ Resources:
             Path: /notion
             Method: options
 
+  # Api GW Role
+  ApiGWRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: AllowSqsIntegration
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'sqs:SendMessage'
+                  - 'sqs:GetQueueUrl'
+                  - 'sqs:SendMessageBatch'
+                Resource: !GetAtt AddNotionQueue.Arn
 
   # Lambda API Role
   LambdaNotionApiRole:
@@ -62,12 +115,16 @@ Resources:
                   - 'arn:aws:logs:*:*:*'
                 Effect: Allow
               - Action:
-                  - 'dynamodb:PutItem'
-                  - 'dynamodb:GetItem'
-                  - 'dynamodb:Query'
-                  - 'dynamodb:Scan'
-                  - 'dynamodb:UpdateItem'
-                Resource: '*'
+                  - 'sqs:ReceiveMessage'
+                  - 'sqs:DeleteMessage'
+                  - 'sqs:GetQueueAttributes'
+                Resource: !GetAtt AddNotionQueue.Arn
+                Effect: Allow
+              - Action:
+                  - 'sqs:ReceiveMessage'
+                  - 'sqs:DeleteMessage'
+                  - 'sqs:GetQueueAttributes'
+                Resource: !GetAtt UpdateNotionQueue.Arn
                 Effect: Allow
       AssumeRolePolicyDocument:
         Version: 2012-10-17
@@ -83,63 +140,66 @@ Resources:
   LambdaAuthorizerFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: NotionAuthorizerFunction
       CodeUri: authorizer/
       Environment:
         Variables:
           username: "{{resolve:ssm:recallassistant-username}}"
           password: "{{resolve:ssm:recallassistant-password}}"
 
-  # Get Notion API Lambda
-  UpdateNotionApiFunction:
+  # Add Notion API Lambda
+  AddNotionApiFunctionSQS:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt
-        - LambdaNotionApiRole
-        - Arn
-      CodeUri: update-notion/
+      FunctionName: AddNotionApiFunctionSQS
+      Role: !GetAtt LambdaNotionApiRole.Arn
+      CodeUri: add-notion/
+      Policies:
+        - S3FullAccessPolicy:
+            BucketName: !Ref NotionsBucket
       Events:
-        AddNotionApi:
-          Type: Api
+        AddNotionEvent:
+          Type: SQS
           Properties:
-            RestApiId: !Ref APIGateway
-            Path: /notion
-            Method: patch
+            Queue: !GetAtt AddNotionQueue.Arn
+            BatchSize: 100
+            MaximumBatchingWindowInSeconds: 30
+
+  # Update Notion API Lambda
+  UpdateNotionApiFunctionSQS:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: UpdateNotionApiFunctionSQS
+      Role: !GetAtt LambdaNotionApiRole.Arn
+      CodeUri: update-notion/
+      Policies:
+        - S3FullAccessPolicy:
+           BucketName: !Ref NotionsBucket
+      Events:
+        AddNotionEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt UpdateNotionQueue.Arn
+            BatchSize: 10
+            MaximumBatchingWindowInSeconds: 20
 
   # Get Notion API Lambda
-  GetNotionApiFunction:
+  GetNotionApiFunctionSQS:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt
-       - LambdaNotionApiRole
-       - Arn
+      FunctionName: GetNotionApiFunctionSQS
+      Role: !GetAtt LambdaNotionApiRole.Arn
       CodeUri: get-notion/
-      Timeout: 10
       Events:
-        AddNotionApi:
+        GetNotionEvent:
           Type: Api
           Properties:
             RestApiId: !Ref APIGateway
             Path: /notion
             Method: get
 
-  # Add Notion API Lambda
-  AddNotionApiFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: add-notion/
-      Role: !GetAtt
-        - LambdaNotionApiRole
-        - Arn
-      Events:
-        AddNotionApi:
-          Type: Api
-          Properties:
-            RestApiId: !Ref APIGateway
-            Path: /notion
-            Method: post
-
 Outputs:
   AddNotionApi:
     Description: "API Gateway endpoint URL for dev stage for GET Notion function"
     Value:
-      Fn::Sub: https://${APIGateway}.execute-api.${AWS::Region}.amazonaws.com/dev/notion/
+      Fn::Sub: https://${APIGateway}.execute-api.${AWS::Region}.amazonaws.com/dev3/notion/

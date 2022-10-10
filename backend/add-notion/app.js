@@ -1,38 +1,48 @@
 const AWS = require('aws-sdk');
 const uuid = require('uuid');
-const dynamodb = new AWS.DynamoDB.DocumentClient({region: 'us-east-1'});
 
-exports.lambdaHandler = function(event, context, callback) {
-
+exports.lambdaHandler = async function (event, context) {
     console.log("Received Event: ", event);
-    const body = JSON.parse(event.body);
-    const params = {
-        TableName: 'NOTION',
-        Item: {
-            uuid: uuid.v1(),
-            header: body.header,
-            content: body.content,
-            tags: body.tags,
-            views: 0,
-            source: body.source,
-            addedDate: Date.now()
-        }
+
+    const documentParams = {
+        Bucket: "recallassistant-notions",
+        Key: "notions.json",
+        ContentType: 'text/json'
     };
 
-    const response = {
-        statusCode: 200,
-        body: "",
-        headers: {
-            "Access-Control-Allow-Origin": "*"
-        }
+     const notionToCsvRow = eventItem => {
+       return {
+           uuid: uuid.v1(),
+           timestamp: Date.now(),
+           header: eventItem.header,
+           content: eventItem.content,
+           tags: eventItem.tags,
+           views: 0,
+           source: eventItem.source,
+       }
     };
 
-    dynamodb.put(params, function(err) {
-        if (err) {
-            response.statusCode = 500
-            response.body = 'DynamoDB put Error: ' + err;
-        }
-        console.log("Added Notion to dynamo!");
-        callback(null, response);
+    const s3 = new AWS.S3({region: process.env.AWS_REGION});
+    const getParams = {
+        Bucket: documentParams.Bucket,
+        Key: documentParams.Key
+    };
+    const notionsDocument = await s3.getObject(getParams).promise();
+    const pulledNotionsObj = JSON.parse(notionsDocument.Body.toString());
+    const newNotionsObj = [];
+
+    event.Records.forEach(record => {
+        let notionRaw = JSON.parse(record.body);
+        let notionObj = notionToCsvRow(notionRaw);
+        newNotionsObj.push(notionObj);
     });
+
+    const resultNotionsJson = JSON.stringify(pulledNotionsObj.concat(newNotionsObj));
+    const putParams = {
+      ...documentParams,
+      Body: resultNotionsJson,
+    };
+    await s3.putObject(putParams).promise();
+
+    return 0;
 };

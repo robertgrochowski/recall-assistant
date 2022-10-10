@@ -1,7 +1,7 @@
 {
   "name": "cors",
   "version": "1.0.0",
-  "description": "cors",
+  "description": "CORS endpoint lambda",
   "main": "app.js",
   "author": "Robert Grochowski",
   "license": "MIT"

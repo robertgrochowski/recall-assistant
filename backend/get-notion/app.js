@@ -1,15 +1,10 @@
 const AWS = require('aws-sdk');
-const dynamodb = new AWS.DynamoDB.DocumentClient({region: 'us-east-1'});
 
 exports.lambdaHandler = function (event, context, callback) {
-    const getQueryParams = endDate => {
-        return {
-            TableName: "NOTION",
-            ExpressionAttributeValues: {
-                ':fromDate': endDate.getTime()
-            },
-            FilterExpression: 'addedDate >= :fromDate'
-        }
+    const s3 = new AWS.S3({region: process.env.AWS_REGION});
+    const getParams = {
+        Bucket: "recallassistant-notions",
+        Key: "notions.json",
     };
 
     const response = {
@@ -22,59 +17,44 @@ exports.lambdaHandler = function (event, context, callback) {
         body: "",
     }
 
-    const executeQuery = (endDate) =>
-        new Promise((resolve, reject) => {
-            dynamodb.scan(getQueryParams(endDate),
-                (err, data) => err ? reject(err) : resolve(data.Items))
-        });
-
-    const getDateWithWeeksAgo = weeks => {
-        let date = new Date()
-        date.setDate(date.getDate() - weeks * 7);
-        return date;
+    const daysDifference = (timestampFrom, timestampTo) => {
+        return Math.ceil((timestampTo - timestampFrom) / (1000 * 3600 * 24));
     }
 
-    const today = new Date();
-    const onSuccess = (items) => {
-        let result = []
-        let lastWeekItems = []
-        let lastThreeWeeksItems = []
+    const onReceivedDatabase = data => {
+        const notions = JSON.parse(data.Body.toString());
+        const currentTimestamp = Date.now();
 
+        let notionsWithinWeek = notions.filter(notion => daysDifference(notion.timestamp, currentTimestamp) <= 7);
+        let notionsWithinTwoWeeks = notions.filter(notion =>
+            daysDifference(notion.timestamp, currentTimestamp) > 7 &&
+            daysDifference(notion.timestamp, currentTimestamp) <= 14);
+        let notionsWithinThreeWeeks = notions.filter(notion =>
+            daysDifference(notion.timestamp, currentTimestamp) > 14 &&
+            daysDifference(notion.timestamp, currentTimestamp) <= 21);
+        let notionsLater = notions.filter(notion => daysDifference(notion.timestamp, currentTimestamp) > 21);
 
-        items.forEach(notion => {
-            let date = new Date(notion.addedDate);
-            let daysDifference = Math.ceil((today - date) / (1000 * 3600 * 24));
-            console.log(daysDifference)
-            if (daysDifference <= 7) {
-                lastWeekItems.push(notion);
-            } else {
-                lastThreeWeeksItems.push(notion);
-            }
-        });
+        notionsWithinWeek = shuffle(notionsWithinWeek);
+        notionsWithinTwoWeeks = shuffle(notionsWithinTwoWeeks).slice(0, 25);
+        notionsWithinThreeWeeks = shuffle(notionsWithinThreeWeeks).slice(0, 15);
+        notionsLater = shuffle(notionsLater).slice(0, 10);
 
-        lastThreeWeeksItems = shuffle(lastThreeWeeksItems);
-        lastThreeWeeksItems = lastThreeWeeksItems.slice(0, 30)
-        for(let i = 0; i < 3; i++) {
-            result.push(...lastWeekItems)
-        }
-        result.push(...lastThreeWeeksItems);
-        result = shuffle(result)
+        const result = shuffle([...notionsWithinWeek, ...notionsWithinTwoWeeks, ...notionsWithinThreeWeeks, ...notionsLater]);
+        console.log("Notions 1 week: " + notionsWithinWeek.length);
+        console.log("Notions 2 week: " + notionsWithinTwoWeeks.length);
+        console.log("Notions 3 week: " + notionsWithinThreeWeeks.length);
+        console.log("Notions Later: " + notionsLater.length);
 
         response.body = JSON.stringify(result);
         callback(null, response)
     }
 
-    const onError = (error) => {
-        console.error(error);
+    const onError = error => {
+        console.error("an error has occurred during s3 get", error)
         response.statusCode = 500
-        response.body = 'DynamoDB Query Error: ' + error;
+        response.body = 'S3 Error: ' + error;
         callback(null, response);
     }
-
-    executeQuery(getDateWithWeeksAgo(4))
-        .then(onSuccess)
-        .catch(onError)
-
 
     function shuffle(array) {
         let currentIndex = array.length, randomIndex;
@@ -93,4 +73,7 @@ exports.lambdaHandler = function (event, context, callback) {
 
         return array;
     }
+
+    //////////
+    s3.getObject(getParams).promise().then(onReceivedDatabase, onError);
 };

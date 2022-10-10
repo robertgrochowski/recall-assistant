@@ -1,7 +1,7 @@
 {
   "name": "update-notion",
   "version": "1.0.0",
-  "description": "update notion in dynamo",
+  "description": "Update notion",
   "main": "app.js",
   "author": "Robert Grochowski",
   "license": "MIT"
