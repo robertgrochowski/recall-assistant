@@ -18,6 +18,16 @@ Resources:
     # DeletionPolicy: Retain
     Properties:
       BucketName: recallassistant-notions
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - GET
+              - PUT
+              - HEAD
+            AllowedOrigins:
+              - "*"
 
   # API Gateway
   APIGateway:
