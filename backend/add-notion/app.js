@@ -66,15 +66,13 @@ exports.lambdaHandler = function (event, context, callback) {
     const generatePresignedUrlsPromises = () => {
         const promises = [];
 
-        console.log("new notion: ", JSON.stringify(newNotion))
-
         for(let i = 0; i < newNotion.pictures; i++) {
-            console.log("add presigned")
             const presignedParams = {
                 Bucket: documentParams.Bucket,
                 Key: newNotion.uuid+"/"+i+".png",
                 Expires: 300,
                 ContentType: 'image/png',
+                ACL: 'public-read'
             }
             promises.push(s3.getSignedUrlPromise('putObject', presignedParams));
         }
