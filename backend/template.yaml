@@ -24,7 +24,7 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       Name: RecallAssistantAPI
-      StageName: dev4
+      StageName: dev
       Auth:
         Authorizers:
           BasicAuthorizer:
@@ -143,4 +143,4 @@ Outputs:
   AddNotionApi:
     Description: "API Gateway endpoint URL for dev stage for GET Notion function"
     Value:
-      Fn::Sub: https://${APIGateway}.execute-api.${AWS::Region}.amazonaws.com/dev4/notion/
+      Fn::Sub: https://${APIGateway}.execute-api.${AWS::Region}.amazonaws.com/dev/notion/
