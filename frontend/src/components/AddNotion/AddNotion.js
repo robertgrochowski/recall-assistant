@@ -23,6 +23,7 @@ import 'react-quill/dist/quill.snow.css';
 import './AddNotion.css';
 import FormElement from "./FormElement";
 import NotionBody from "../Notion/NotionBody/NotionBody";
+import ImageUploading from "react-images-uploading";
 
 const AddNotion = () => {
 
@@ -37,6 +38,14 @@ const AddNotion = () => {
     const [tag1, setTag1] = useState("")
     const [tag2, setTag2] = useState("")
     const [tag3, setTag3] = useState("")
+    const [images, setImages] = useState([])
+
+
+    const onChange = (imageList, addUpdateIndex) => {
+        // data for submit
+        console.log(imageList, addUpdateIndex);
+        setImages(imageList);
+    };
 
 
     const handleAddNotion = () => {
@@ -45,6 +54,8 @@ const AddNotion = () => {
             header: title,
             source,
             content,
+            thumbnail: images[0]?.data_url,
+            images: images?.slice(1).map(img => img.data_url),
             tags: [tag1, tag2, tag3]
         }
         axios.post(NOTION_URL, data)
@@ -79,9 +90,9 @@ const AddNotion = () => {
     }
 
     return (
-        <Grid container spacing={2} justifyContent="center" alignItems="flex-start">
+        <Grid container spacing={2} justifyContent="center" alignItems="center">
             <Grid item xl={5} md={12} xs={12}>
-            <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center',}}>
+            <Box mt={2} sx={{display: 'flex', flexDirection: 'column', alignItems: 'center',}}>
                 <Box sx={{ mt: 1}}>
                     <Box sx={{display: 'flex'}}>
                             <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
@@ -123,35 +134,82 @@ const AddNotion = () => {
                                            value={tag3}/>
                             </Grid>
                         </Grid>
-                    <ReactQuill theme="snow" value={quillContent} onChange={onTextareaChanged} readOnly={uploading}/>
                     </FormElement>
-                </Box>
+                    <FormElement label="Images">
+                        <ImageUploading
+                            multiple
+                            value={images}
+                            onChange={onChange}
+                            maxNumber={10}
+                            dataURLKey="data_url"
+                            acceptType={["jpeg", "jpg", "png"]}
+                        >
+                            {({
+                                  imageList,
+                                  onImageUpload,
+                                  onImageRemoveAll,
+                                  onImageUpdate,
+                                  onImageRemove,
+                                  isDragging,
+                                  dragProps
+                              }) => (
+
+                                <div className="upload__image-wrapper" style={{margin: "10px 0 10px 0"}}>
+                                    <Button
+                                        color={isDragging ? "error" : "primary"}
+                                        variant="contained"
+                                        onClick={onImageUpload}
+                                        {...dragProps}
+                                    >
+                                        Click or Drop here
+                                    </Button>
+                                    &nbsp;
+                                    {/*<Button color="error" variant="outlined" onClick={onImageRemoveAll}>Remove all images</Button>*/}
+                                    <Box display="flex" mt={1}>
+                                        {imageList.map((image, index) => (
+                                            <div key={index} className="image-item" style={{margin: "5px"}}>
+                                                <img src={image.data_url} alt="" width="130px" />
+                                                <div className="image-item__btn-wrapper">
+                                                    <Button size="small" variant="text" color="primary" onClick={() => onImageUpdate(index)}>Update</Button>
+                                                    <Button size="small" variant="text" color="error" onClick={() => onImageRemove(index)}>Remove</Button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </Box>
+                                </div>
+                            )}
+                        </ImageUploading>
+                    </FormElement>
+                <ReactQuill theme="snow" value={quillContent} onChange={onTextareaChanged} readOnly={uploading}/>
+            </Box>
             </Box>
             </Grid>
             <Grid item xl={6} md={12} xs={12}>
-                <Box sx={{display: 'flex'}}>
+                <Box mt={2} sx={{display: 'flex'}}>
                     <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
                         <PreviewIcon />
                     </Avatar>
                     <Typography sx={{ml:1, lineHeight:'55px'}} variant="h5">Preview</Typography>
                 </Box>
-                <Card sx={{ width: "750px", maxHeight:"320px" }}>
+                <Card sx={{ width: "750px", maxHeight:"360px" }}>
                     <CardContent>
                         <NotionBody notion={{
                             header: title ? title : "Title",
                             tags: [tag1, tag2, tag3],
                             content: content ? content : "Content",
+                            thumbnail: images[0]?.data_url,
+                            images: images?.slice(1).map(img => img.data_url),
                             source: source ? source : "source" }}/>
                     </CardContent>
                 </Card>
             </Grid>
-            <Grid item xs={12} xl={12}>
+            <Grid item xs={6} xl={6}>
                 {message && <Alert severity={error ? "error" : "success"}>{message}</Alert>}
                 <Button
                     margin="dense"
                     variant="contained"
                     fullWidth
-                    sx={{mt:1}}
+                    sx={{mt:5}}
                     onClick={handleAddNotion}
                     disabled={uploading}
                     type="submit"
