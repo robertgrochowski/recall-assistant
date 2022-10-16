@@ -3,7 +3,7 @@ const AWS = require('aws-sdk');
 exports.lambdaHandler = function (event, context, callback) {
     const s3 = new AWS.S3({region: process.env.AWS_REGION});
     const getParams = {
-        Bucket: "recallassistant-notions",
+        Bucket: "recall-assistant-notions",
         Key: "notions.json",
     };
 

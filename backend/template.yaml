@@ -17,7 +17,7 @@ Resources:
     Type: 'AWS::S3::Bucket'
     # DeletionPolicy: Retain
     Properties:
-      BucketName: recallassistant-notions
+      BucketName: recall-assistant-notions
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders:
