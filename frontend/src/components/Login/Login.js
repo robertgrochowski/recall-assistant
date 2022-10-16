@@ -8,6 +8,7 @@ import {NOTION_URL} from "../../common/Constants";
 import {useState} from "react";
 import {Alert, CircularProgress} from "@mui/material";
 import {useNavigate} from "react-router-dom";
+import {Buffer} from 'buffer';
 
 const Login = ({setAuthenticated}) => {
 

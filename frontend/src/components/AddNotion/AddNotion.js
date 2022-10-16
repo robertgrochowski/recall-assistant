@@ -40,35 +40,56 @@ const AddNotion = () => {
     const [tag3, setTag3] = useState("")
     const [images, setImages] = useState([])
 
-
-    const onChange = (imageList, addUpdateIndex) => {
-        // data for submit
-        console.log(imageList, addUpdateIndex);
+    const onChange = (imageList) => {
         setImages(imageList);
     };
 
-
     const handleAddNotion = () => {
+        if(content.length < 1 || source.length < 1 || title.length < 1) {
+            setError(true);
+            setMessage("Fill in empty fields")
+            return;
+        }
+
+        setError(false);
+        setMessage(null);
         setUploading(true)
+
         const data = {
             header: title,
             source,
             content,
-            thumbnail: images[0]?.data_url,
-            images: images?.slice(1).map(img => img.data_url),
-            tags: [tag1, tag2, tag3]
+            pictures: images.length,
+            tags: [tag1, tag2, tag3],
         }
+
         axios.post(NOTION_URL, data)
-        .then(response => {
-            if(response.status === 200) {
+            .then(response => {
+                if (response.status === 200) {
+                    let urls = response.data.urls;
+                    const promises = []
+
+                    for (let i = 0; i < urls.length; i++) {
+                        promises.push(fetch(urls[i], {
+                            method: "PUT",
+                            body: images[i].file
+                        }));
+                    }
+                    return promises;
+                } else {
+                    throw Error("Error: " + response.status);
+                }
+            })
+            .then(imagePromises => Promise.all(imagePromises))
+            .then(() => {
                 setMessage("Notion has been added!");
                 clearFields();
-            } else {
-                setMessage("Error "+response.status);
+            })
+            .catch(error => {
                 setError(true);
-            }
-        })
-        .finally(() => setUploading(false));
+                setMessage(error);
+            })
+            .finally(() => setUploading(false));
     }
 
     function clearFields() {
@@ -142,7 +163,7 @@ const AddNotion = () => {
                             onChange={onChange}
                             maxNumber={10}
                             dataURLKey="data_url"
-                            acceptType={["jpeg", "jpg", "png"]}
+                            acceptType={["png"]}
                         >
                             {({
                                   imageList,
@@ -197,19 +218,18 @@ const AddNotion = () => {
                             header: title ? title : "Title",
                             tags: [tag1, tag2, tag3],
                             content: content ? content : "Content",
-                            thumbnail: images[0]?.data_url,
-                            images: images?.slice(1).map(img => img.data_url),
+                            images: images?.map(img => img.data_url),
                             source: source ? source : "source" }}/>
                     </CardContent>
                 </Card>
             </Grid>
             <Grid item xs={6} xl={6}>
-                {message && <Alert severity={error ? "error" : "success"}>{message}</Alert>}
+                {message && <Alert sx={{mt: 2}} severity={error ? "error" : "success"}>{message}</Alert>}
                 <Button
                     margin="dense"
                     variant="contained"
                     fullWidth
-                    sx={{mt:5}}
+                    sx={{mt:3}}
                     onClick={handleAddNotion}
                     disabled={uploading}
                     type="submit"

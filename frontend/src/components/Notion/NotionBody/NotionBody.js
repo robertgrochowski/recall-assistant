@@ -3,9 +3,13 @@ import TodayIcon from "@mui/icons-material/Today";
 import TagIcon from '@mui/icons-material/Tag';
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import MenuBook from "@mui/icons-material/MenuBook";
+import NotionContent from "../NotionContent/NotionContent"
 
 const NotionBody = ({notion}) => {
-    let date = notion.addedDate ? new Date(notion.addedDate) : "";
+    const date = notion.timestamp ? new Date(notion.timestamp) : "";
+    const thumbnail = notion.images[0];
+    const images = notion.images?.slice(1);
+
     return <>
         <Grid container direction="row" alignItems="center" spacing={1} sx={{paddingTop:0}}>
 
@@ -41,10 +45,9 @@ const NotionBody = ({notion}) => {
                 </Grid>
             </Grid>
         </Grid>
-
-        <Typography component={'span'} variant="body1" align="justify" pt={0}>
-            <div dangerouslySetInnerHTML={{__html: notion?.content}}></div>
-        </Typography>
+        <div>
+            {notion && <NotionContent content={notion.content} images={images} thumbnail={thumbnail}/>}
+        </div>
     </>;
 }
 export default NotionBody;
