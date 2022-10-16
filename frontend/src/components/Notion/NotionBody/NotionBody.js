@@ -1,5 +1,6 @@
 import {Chip, Grid, Typography} from "@mui/material";
 import TodayIcon from "@mui/icons-material/Today";
+import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import TagIcon from '@mui/icons-material/Tag';
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import MenuBook from "@mui/icons-material/MenuBook";
@@ -31,14 +32,18 @@ const NotionBody = ({notion}) => {
             <Grid item>
                 <Grid container direction="row" justifyContent="flex-end" spacing={1} pt={0.5}>
                     {notion.tags && notion.tags.map((val, i) => (
-                        <Grid item key={i}>
-                            {val && <Chip size="small" label={val} icon={<TagIcon fontSize="small"/>} />}
-                        </Grid>
+                        <>{val && <Grid item key={i}>
+                             <Chip size="small" label={val} icon={<TagIcon fontSize="small"/>} />
+                        </Grid>}</>
                     ))
                     }
                     {date && <Grid item>
                         <Chip size="small" label={`${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`} icon={<TodayIcon fontSize="small"/>} />
                     </Grid>}
+                    {notion.pictures && <Grid item>
+                        <Chip size="small" label={notion.pictures} icon={<InsertPhotoIcon fontSize="small"/>} />
+                    </Grid>
+                    }
                     {!isNaN(notion.viewsAmount) && <Grid item>
                         <Chip size="small" label={notion.viewsAmount} icon={<RemoveRedEyeIcon fontSize="small"/>} />
                     </Grid>}

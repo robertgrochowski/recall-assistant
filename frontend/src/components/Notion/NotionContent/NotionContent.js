@@ -29,7 +29,7 @@ const NotionContent = ({thumbnail, content, images}) => {
 
     const mainContent = () =>
         <>
-            {thumbnail && <img alt="thumbnail" style={{float: "right", width:"150px", height:"150px" }} src={thumbnail} />}
+            {thumbnail && <img alt="thumbnail" style={{float: "right", width:"150px", height:"150px", paddingLeft:"15px" }} src={thumbnail} />}
             <Typography component={'span'} variant="body1" align="justify" dangerouslySetInnerHTML={{__html: content}}></Typography>
         </>;
 
