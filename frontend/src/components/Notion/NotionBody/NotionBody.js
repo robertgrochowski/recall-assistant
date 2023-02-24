@@ -32,9 +32,9 @@ const NotionBody = ({notion}) => {
             <Grid item>
                 <Grid container direction="row" justifyContent="flex-end" spacing={1} pt={0.5}>
                     {notion.tags && notion.tags.map((val, i) => (
-                        <>{val && <Grid item key={i}>
+                        <div key={i}>{val && <Grid item key={i}>
                              <Chip size="small" label={val} icon={<TagIcon fontSize="small"/>} />
-                        </Grid>}</>
+                        </Grid>}</div>
                     ))
                     }
                     {date && <Grid item>

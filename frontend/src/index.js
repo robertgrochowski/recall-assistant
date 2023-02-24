@@ -5,8 +5,6 @@ import App from './App';
 import axios from "axios";
 import { store } from './store/store';
 import {Provider} from "react-redux";
-import {NOTION_URL} from "./common/Constants";
-import {setNotions} from "./store/notionSlices";
 import {BrowserRouter as Router} from 'react-router-dom'
 
 axios.interceptors.request.use(function (config) {
@@ -18,10 +16,6 @@ axios.interceptors.request.use(function (config) {
     if (error.response.status === 401) {
         localStorage.removeItem("token");
     }
-});
-
-axios.get(NOTION_URL).then(response => {
-    store.dispatch(setNotions(response.data))
 });
 
 ReactDOM.render(

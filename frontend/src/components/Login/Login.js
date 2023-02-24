@@ -7,14 +7,12 @@ import axios from "axios";
 import {NOTION_URL} from "../../common/Constants";
 import {useState} from "react";
 import {Alert, CircularProgress} from "@mui/material";
-import {useNavigate} from "react-router-dom";
 import {Buffer} from 'buffer';
 
 const Login = ({setAuthenticated}) => {
 
     const [loginInProgress, setLoginInProgress] = useState(false)
     const [apiError, setApiError] = useState("");
-    let navigate = useNavigate();
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -27,7 +25,6 @@ const Login = ({setAuthenticated}) => {
 
         axios.get(NOTION_URL).then(() => {
             setAuthenticated(true);
-            navigate("/");
         }).catch(error => {
             if(error?.response?.status === 401) {
                 setApiError("Invalid credentials");

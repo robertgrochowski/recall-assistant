@@ -24,8 +24,10 @@ export const notionsSlice = createSlice({
             state.notions = action.payload.map(addNotionsImages);
             state.currentItem = action.payload[0]
             state.currentItemIndex = 0;
+            console.log("set store")
         },
         nextNotion: (state) => {
+            console.log("next store")
             state.currentItemIndex += 1;
             state.currentItem = state.notions[state.currentItemIndex];
         },

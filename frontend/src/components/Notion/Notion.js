@@ -9,21 +9,27 @@ const Notion = () => {
     const notions = useSelector(selectNotions);
     const dispatch = useDispatch();
 
+    function getNotions() {
+        axios.get(NOTION_URL).then(response => {
+            dispatch(setNotions(response.data));
+        });
+    }
+
     const loadNextNotion = () => {
         if(notions.currentItemIndex + 1 === notions.notions.length) {
-            console.log("reset notion")
             dispatch(resetNotions());
-            axios.get(NOTION_URL).then(response => {
-                dispatch(setNotions(response.data));
-            });
+            getNotions();
         }
         else {
-            console.log("next notion");
             dispatch(nextNotion());
         }
     }
 
     const notion = notions.currentItem;
+
+    if(notion === null) {
+        getNotions();
+    }
 
     return (
         <Box display="flex"
