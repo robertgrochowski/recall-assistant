@@ -4,10 +4,12 @@ import NotionActions from "./NotionActions/NotionActions";
 import {useDispatch, useSelector} from "react-redux";
 import {selectNotions, nextNotion, setNotions, resetNotions} from "../../store/notionSlices";
 import axios from "axios";
-import {NOTION_URL} from "../../common/Constants";
+import {NOTION_URL, NOTION_REFRESH_INTERVAL} from "../../common/Constants";
+import {useEffect} from "react";
 const Notion = () => {
     const notions = useSelector(selectNotions);
     const dispatch = useDispatch();
+    const notion = notions.currentItem;
 
     function getNotions() {
         axios.get(NOTION_URL).then(response => {
@@ -25,7 +27,15 @@ const Notion = () => {
         }
     }
 
-    const notion = notions.currentItem;
+    useEffect(() => {
+        if(notion === null) {
+            return;
+        }
+        const interval = setInterval(loadNextNotion, NOTION_REFRESH_INTERVAL);
+        return () => {
+            clearInterval(interval);
+        };
+    }, [notion])
 
     if(notion === null) {
         getNotions();
